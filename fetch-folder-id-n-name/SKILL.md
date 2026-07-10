@@ -71,7 +71,6 @@ Example (normal match):
   "action": "upload",
   "folderId": "1AbCdEfGhIjKlMnOpQrStUvWxYz",
   "folderName": "folder_2",
-  "usedDefault": false
 }
 ```
 
@@ -81,7 +80,5 @@ Example (fallback used):
   "action": "upload",
   "folderId": "1XyZaBcDeFgHiJkLmNoPqRsTuV",
   "folderName": "default_folder",
-  "usedDefault": true,
-  "note": "Requested folder name 'invoices_2024' not recognized, routed to default_folder"
 }
 ```
