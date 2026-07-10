@@ -47,23 +47,41 @@ From the results, find the folder whose name matches the target folder name from
 
 ## Step 3 — Return the result
 
-Return **only** the id and name of the single assigned folder — not the full list of folders you searched through. For example:
+Return **only** a single valid JSON object — no markdown fences, no prose before or after, no explanation of what you did.
 
-```
+Schema:
+```json
 {
-  "folderId": "1AbCdEfGhIjKlMnOpQrStUvWxYz",
-  "folderName": "folder_2"
+  "action": "upload",
+  "folderId": "string",
+  "folderName": "string",
 }
 ```
 
-If the user's requested folder name wasn't recognized (Step 1A fallback), also say so in your reply so they know why the file went to `default_folder`.
+Rules:
+- `action` must always be the literal string `"upload"` — this is what lets the workflow route your output correctly.
+- `folderId` and `folderName` refer to the single assigned folder only — never return the full list of folders you searched through.
+- If the user's requested folder name wasn't recognized (Step 1A fallback), set `folderName` to `"default_folder".
+- Never include `summary` in this output — that field belongs only to the summarize-document skill's output shape.
+- Do not wrap the JSON in ```json code fences — return raw JSON only, since the downstream Structured Output Parser expects to parse it directly.
 
-## Examples
+Example (normal match):
+```json
+{
+  "action": "upload",
+  "folderId": "1AbCdEfGhIjKlMnOpQrStUvWxYz",
+  "folderName": "folder_2",
+  "usedDefault": false
+}
+```
 
-| Filename | User request | Result |
-|---|---|---|
-| `report_1.pdf` | none | `folder_1` |
-| `invoice_23_final.pdf` | none | `default_folder` (no `_1`/`_2`/`_3` match — `_23` doesn't count) |
-| `notes_2_draft.docx` | none | `folder_2` |
-| `photo.jpg` | "put this in Marketing" (doesn't exist) | `default_folder`, and tell the user "Marketing" wasn't recognized |
-| `photo.jpg` | "put this in folder_3" | `folder_3` |
+Example (fallback used):
+```json
+{
+  "action": "upload",
+  "folderId": "1XyZaBcDeFgHiJkLmNoPqRsTuV",
+  "folderName": "default_folder",
+  "usedDefault": true,
+  "note": "Requested folder name 'invoices_2024' not recognized, routed to default_folder"
+}
+```
